@@ -1,6 +1,6 @@
   #include "Context.h"
   #include "State.h"
-  
+  //Singleton state
   void Context::TransitionTo(State *state) {
     Serial.println("Transitioning");
     if (this->state_ != nullptr)
