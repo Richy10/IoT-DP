@@ -19,33 +19,29 @@
  */
 #include "SensorDHT.h"
 #include "SensorLight.h"
+#include "SensorReader.h" // Include the new SensorReader.h
 #include <list>
 
-std::list<ISensor *> Sensors;
-
-SensorDHT   *d_sensor;
-SensorLight *l_sensor;
+std::list<SensorReader *> SensorReaders; // list of SensorReader objects instead of ISensor
 
 void setup() {
   Serial.begin(115200);
   delay(1000);
   Serial.println("\n\Start\n");
   
- // d_sensor = new SensorDHT(DHT11,4); this is for ESP?
-//  l_sensor = new SensorLight(LIGHT,2);
-  //d_sensor = new SensorDHT(DHT11,14);
-  l_sensor = new SensorLight(LIGHT,26);
-  
+  // Create SensorReader objects for each sensor
+  SensorReaders.push_back(new SensorReader(new SensorDHT(DHT11,14), "Temperature"));
+  SensorReaders.push_back(new SensorReader(new SensorLight(LIGHT,26), "Light"));
 }
 
 void loop() {
   
   delay(3000);
-  //d_sensor->read_sensor();
-  Serial.println("Im Alive");
-  //Serial.println("Current temp: " + String( d_sensor->get_data(0) ) );
-  l_sensor->read_sensor();
-  Serial.println("Current light: " + String( l_sensor->get_data(0) ) );
   
-
+  Serial.println("Im Alive");
+  // Now you iterate over each SensorReader object and call their methods
+  for (SensorReader *reader : SensorReaders) {
+    reader->readSensor();
+    Serial.println("Current " + reader->getName() + ": " + String(reader->getData(0)));
+  }
 }
